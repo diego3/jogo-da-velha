@@ -1,11 +1,13 @@
 #include <iostream>
+#include <cstdlib>
 #include <cstdio>
-#include <string.h>
+#include <string>
 
-#define MAX 3
-#define MENU_JOGAR  1
-#define MENU_SAIR   2
-#define MENU_PLACAR 3
+#define MAX 3                //o dimensao das matrizes
+#define MENU_SAIR        -1
+#define MENU_MULTIPLAYER  1
+#define MENU_PLACAR       2
+#define MENU_PLAYER_VS_PC 3
 
 using namespace std;
 
@@ -16,33 +18,58 @@ int main() {
     int posicaoEscolhida = 0;//Guarda a posicão que o jogador da vez escolheu
     bool running = false;//utilizada para marcar quando o jogo está ativo ou não
     int p1 = 1, p2 = 0;//utilizados para verificar qual jogador está jogando (1 para ativo e 0 para desativado)
+    int player1_pontos = 0, player2_pontos = 0;
+    int game_mode = 0;
     bool jogou = false; // variavel utilizada para controlar quando um jogador fez a jogado ou nao
     bool todosEscolhidos = true;//utilizada para vericar quando todas as posicoes já estiverem escolhidas
+    bool posicaoLivre = true;
     char p1S = 'X', p2S = 'O'; //p1 e p2 simbolo
     string s = "P1";
-
+    string separador = "*******************************\n";
+    string player1_name, player2_name;
     bool menu = true;
-    int menu_opcao = 0;
+    int  menu_opcao = 0;
 
     while(menu) {
-        cout << "1 - jogar;\n";
-        cout << "2 - placares;\n";
-        cout << "-1 para sair\n";
-        cout << "escolha uma opcao: \n";
+        cout << "       escolha uma opcao: \n";
+        cout << "       1 - multiplayer;\n";
+        cout << "       2 - placares;\n";
+        cout << "       3 - P1 VS PC\n";
+        cout << "           *** digite -1 para sair! ***\n";
+
         cin >> menu_opcao;
         if(menu_opcao > 0 || menu_opcao == -1) {
             menu = false;
         }
+        system("cls");
     }
 
     switch(menu_opcao) {
-        case MENU_JOGAR:
+        case MENU_MULTIPLAYER:
+            game_mode = MENU_MULTIPLAYER;
+            //limpando o buffer do cin antes de usa-lo
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
+
+            cout << "qual o nome do jogador 1 ?";
+            getline(cin, player1_name);
+            cout << "qual o nome do jogador 2 ?";
+            getline(cin, player2_name);
+
+            s = player1_name;
             running = true;
         break;
         case MENU_PLACAR:
+            game_mode = MENU_PLACAR;
             //carregar o arquivo de pontuacao e exibir a lista na tela
             //fstream file = open("placar.txt", ios::);
 
+        break;
+        case MENU_PLAYER_VS_PC:
+            game_mode = MENU_PLAYER_VS_PC;
+            running = true;
+
+            return 0;
         break;
 
         case MENU_SAIR:
@@ -87,7 +114,7 @@ int main() {
                 break;
             }
 
-            bool posicaoLivre = true;//flag utilizada para marcar quando a posicao escolhida esta disponivel ou não
+            posicaoLivre = true;//flag utilizada para marcar quando a posicao escolhida esta disponivel ou não
             //verificando se a posicao escolhida esta livre ou ocupada
             switch(posicaoEscolhida) {
                 case 1:
@@ -137,10 +164,6 @@ int main() {
                     break;
             }
 
-            //debug temporário utilizado para verificar se a verificação das posicoes esta ok
-            //cout << "a posicao esta ";
-            //string a = posicaoLivre ? " livre " : " ocupada ";
-            //cout << a << "\n\n";
 
             if(posicaoLivre) {
                 //@todo fazer a jogada, ou seja, marcar a posicao do vetor com O ou X dependendo do player
@@ -184,35 +207,108 @@ int main() {
                         break;
                 }
 
-                //@todo verificar se existe algum ganhador, ou seja, verificar todas as possibilidades de vitoria
+                //verificando se existe algum ganhador, ou seja, verificar todas as possibilidades de vitoria
                 // ou se deu empate, no fim desse processo marcar running como falso para sair do jogo
+                int deu_linha = 0;//se deu linha preenchida, isso acontece quando eh igual a 3 [X, O, X] etc...
+                int linha_que_fechou = -1;
+                bool marcou_ponto = false;
+                for(int i=0; i< MAX; i++) {
+                    deu_linha = 0;
+                    for(int j=0; j< MAX; j++) {
+                        if(vetor[i][j] > 0) {
+                            deu_linha++;
+                        }
+                    }
+                    marcou_ponto = false;
+                    int simbolos_iguais = 0;
+                    if(deu_linha == 3) {//significa qua a linha esta completamente preenchida
+                        linha_que_fechou = i;
+                        char simbolo_que_fechou = grafic[linha_que_fechou][0];
+                        for(int k=0; k< MAX; k++) {
+                            //verificando se eh o mesmo simbolo nas tres casas da linha preenchida
+                            if(grafic[linha_que_fechou][k] == simbolo_que_fechou) {
+                                simbolos_iguais++;
+                            }
+                        }
+                        if(simbolos_iguais == 3) {//sim eh o mesmo simbolo nas tres casas
+                            marcou_ponto = true;
+                            break;
+                        }
+                    }
+                }
+                cout << "linha que fechou = " << linha_que_fechou << "\n\n";
+                //@todo FAZER A VERIFICACAO DAS COLUNAS
+                //@todo FAZER A VERIFICACAO DAS DIAGONAIS
 
-                //alterna os jogadores mudando o label do player
+                if(marcou_ponto) {
+                    if(p1 == 1) {
+                        player1_pontos++;
+                    }
+                    else if(p2 == 1) {
+                        player2_pontos++;
+                    }
+
+                    //zerando as matrizes para comecar outra rodada
+                    for(int i=0; i< MAX; i++) {
+                        for(int j=0; j< MAX; j++) {
+                            vetor[i][j]  = 0;
+                            grafic[i][j] = ' ';
+                        }
+                    }
+                }
+
+                //alterna os jogadores mudando o label do player correspondente
                 if(p1 == 1) {
                     p1 = 0;
                     p2 = 1;
-                    s  = "P1";
+                    s = player2_name;
                 }
                 else if(p2 == 1) {
                     p2 = 0;
                     p1 = 1;
-                    s  = "P2";
+                    if(game_mode == MENU_MULTIPLAYER) {
+                        s = player1_name;
+                    }
+                    else if(game_mode == MENU_PLAYER_VS_PC) {
+                        s = "CPU";
+                    }
+                    else {
+                        s = "P2";
+                    }
                 }
                 jogou = true;
             }
             else {
+                system("cls");
                 jogou = false;
                 //o jogador escolheu uma posicao ocupada, ele devera escolher a posicao novamente
                 cout << "a posicao '" << posicaoEscolhida << "' esta ocupada, escolha outra!\n";
+
+                cout << "\n\n";
+                for(int i=0; i< MAX; i++) {
+                    for(int j=0; j< MAX; j++) {
+                        cout << grafic[i][j] << " | ";
+                    }
+                    cout << endl;
+                }
+                cout << "\n\n";
                 continue;
             }
+
+            system("cls");
             cout << "\n\n";
+            cout << separador;
+            cout << "       P1 - " << player1_pontos << "\n";
+            cout << "       P2 - " << player2_pontos << "\n";
+            cout << separador;
             for(int i=0; i< MAX; i++) {
                 for(int j=0; j< MAX; j++) {
                     cout << grafic[i][j] << " | ";
                 }
                 cout << endl;
             }
+            cout << "\n\n";
+            cout << "posicoes que voce pode escolher!\n";
         }
 
     }
