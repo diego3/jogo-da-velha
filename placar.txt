@@ -1,0 +1,4 @@
+DIEGO , 1TIAGO , 1
+ , 0  , 0 
+DIEGO , 0 TIAGO , 1 
+ , 0  , 0 

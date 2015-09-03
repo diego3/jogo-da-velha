@@ -1,7 +1,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
+#include <cctype> //isdigit
 #include <string>
+#include <fstream>
 
 #define MAX 3                //o dimensao das matrizes
 #define MENU_SAIR        -1
@@ -45,7 +47,7 @@ int main() {
     }
 
     switch(menu_opcao) {
-        case MENU_MULTIPLAYER:
+        case MENU_MULTIPLAYER:{
             game_mode = MENU_MULTIPLAYER;
             //limpando o buffer do cin antes de usa-lo
             cin.clear();
@@ -58,22 +60,35 @@ int main() {
 
             s = player1_name;
             running = true;
+        }
         break;
-        case MENU_PLACAR:
+        case MENU_PLACAR:{
             game_mode = MENU_PLACAR;
             //carregar o arquivo de pontuacao e exibir a lista na tela
-            //fstream file = open("placar.txt", ios::);
+            string linha;
+            ifstream placar("placar.txt");
+            if(!placar.is_open()) {
+                cout << "nao foi possivel abrir o arquivo placar.txt\n";
+                cout << "verificar se o arquivo existe e se tem permissao de leitura\n";
+            }
 
+            while(getline(placar, linha)){
+                cout << linha << "\n";
+            }
+            placar.close();
+        }
         break;
-        case MENU_PLAYER_VS_PC:
+        case MENU_PLAYER_VS_PC:{
             game_mode = MENU_PLAYER_VS_PC;
             running = true;
 
             return 0;
+        }
         break;
 
-        case MENU_SAIR:
+        case MENU_SAIR:{
             return 0;
+        }
         break;
     }
 
@@ -99,6 +114,17 @@ int main() {
 
             cout << s << " escolha uma posicao: ";
             cin >> posicaoEscolhida;
+
+            if(posicaoEscolhida < 0) {
+                running = false;
+                break;
+            }
+            /*if(!isdigit(posicaoEscolhida)) {
+                system("cls");
+                jogou = false;
+                cout << "a posicao deve ser digito somente!, tente novamente\n";
+                continue;
+            }*/
 
             for(int i=0; i< MAX; i++) {
                 for(int j=0; j< MAX; j++) {
@@ -297,10 +323,10 @@ int main() {
 
             system("cls");
             cout << "\n\n";
-            cout << separador;
-            cout << "       P1 - " << player1_pontos << "\n";
-            cout << "       P2 - " << player2_pontos << "\n";
-            cout << separador;
+            cout << "****** PLACAR ******\n";
+            cout << "*      P1 - " << player1_pontos << "      *\n";
+            cout << "*      P2 - " << player2_pontos << "      *\n";
+            cout << "********************\n";
             for(int i=0; i< MAX; i++) {
                 for(int j=0; j< MAX; j++) {
                     cout << grafic[i][j] << " | ";
@@ -313,7 +339,19 @@ int main() {
 
     }
 
-    cout << " o jogo terminou!!\n\n";
+    if(player1_pontos > 0 || player2_pontos > 0) {
+        ofstream placar("placar.txt", ios::app);
+        if(!placar.is_open()) {
+            cout << "nao foi possivel gravar o placar!";
+        }else {
+            placar << player1_name << " , " << player1_pontos << " ";
+            placar << player2_name << " , " << player2_pontos << " ";
+            placar << endl;
+            placar.close();
+        }
+    }
+    //@todo, voltar ao menu principal,
+    cout << "O JOGO TERMINOU!!\n\n";
     return 0;
 }
 
