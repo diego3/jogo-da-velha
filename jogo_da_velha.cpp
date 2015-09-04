@@ -391,12 +391,12 @@ int main() {
                     char continua = ' ';
                     cout << "jogar proxima partida?(y/n)";
                     cin >> continua;
-                    if(continua != 'y' || continua != 'Y'){
-                        proxima_partida = false;
-                        running = false;
-                    }else {
+                    if(continua == 'y' || continua == 'Y'){
                         proxima_partida = true;
-                        running= true;
+                        running         = true;
+                    }else {
+                        proxima_partida = false;
+                        running         = false;
                     }
                 }
             }
@@ -415,9 +415,9 @@ int main() {
             }
         }
 
-        //cout << "jogou = " << jogou << "\n";
-        //cout << "proxima_partida = " << proxima_partida << "\n";
-        //cout << "running = " << running << "\n";
+        cout << "jogou = " << jogou << "\n";
+        cout << "proxima_partida = " << proxima_partida << "\n";
+        cout << "running = " << running << "\n";
         //voltar ao menu principal,
         char decisao = ' ';
         cout << "deseja continuar no jogo (y/n)";
