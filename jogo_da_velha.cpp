@@ -181,7 +181,7 @@ int main() {
 
 
                 if(posicaoLivre) {
-                    //@todo fazer a jogada, ou seja, marcar a posicao do vetor com O ou X dependendo do player
+                    //marcando a posicao do vetor com O ou X dependendo do player
                     switch(posicaoEscolhida) {
                         case 1:
                             //marca a posicao como opcupada e pinta o quadro do jogo
@@ -298,11 +298,12 @@ int main() {
                         if(p1 == 1) {
                             player1_pontos++;
                         }
-                        else if(p2 == 1) {
+                        else if(game_mode == MENU_MULTIPLAYER && p2 == 1) {
                             player2_pontos++;
                         }
-
-
+                        else if(game_mode == MENU_PLAYER_VS_PC) {
+                            //@todo pontuar o player da CPU
+                        }
                         //zerando as matrizes para comecar outra rodada
                         for(int i=0; i< MAX; i++) {
                             for(int j=0; j< MAX; j++) {
@@ -415,9 +416,9 @@ int main() {
             }
         }
 
-        cout << "jogou = " << jogou << "\n";
-        cout << "proxima_partida = " << proxima_partida << "\n";
-        cout << "running = " << running << "\n";
+        //cout << "jogou = " << jogou << "\n";
+        //cout << "proxima_partida = " << proxima_partida << "\n";
+        //cout << "running = " << running << "\n";
         //voltar ao menu principal,
         char decisao = ' ';
         cout << "deseja continuar no jogo (y/n)";
