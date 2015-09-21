@@ -303,6 +303,7 @@ int main() {
                         }
                         else if(game_mode == MENU_PLAYER_VS_PC) {
                             //@todo pontuar o player da CPU
+
                         }
                         //zerando as matrizes para comecar outra rodada
                         for(int i=0; i< MAX; i++) {
