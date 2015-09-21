@@ -24,7 +24,7 @@ int main() {
     int pos = 1;//contador de posicoes utilizado para preencher a matriz da legenda
     int posicaoEscolhida = 0;//Guarda a posicão que o jogador da vez escolheu
     bool running = false;//utilizada para marcar quando o jogo está ativo ou não
-    int p1 = 1, p2 = 0;//utilizados para verificar qual jogador está jogando (1 para ativo e 0 para desativado)
+    int p1 = 1, p2 = 0, cpu = 0;//utilizados para verificar qual jogador está jogando (1 para ativo e 0 para desativado)
     int player1_pontos = 0, player2_pontos = 0, empates = 0;
     int game_mode = 0;
     bool jogou = false; // variavel utilizada para controlar quando um jogador fez a jogado ou nao
@@ -121,8 +121,19 @@ int main() {
                 cout << "\n\n";
                 pos = 1;
 
-                cout << s << " escolha uma posicao: ";
-                cin >> posicaoEscolhida;
+                if(game_mode == MENU_MULTIPLAYER) {
+                    cout << s << " escolha uma posicao: ";
+                    cin >> posicaoEscolhida;
+                }
+                else if(game_mode == MENU_PLAYER_VS_PC) {
+                    //verificar a posicao que o P1 fez
+                    if(vetor[0][0] == '') {
+
+                    }
+                    //escolher uma posicao
+
+
+                }
 
                 if(posicaoEscolhida < 0) {
                     running = false;
@@ -302,8 +313,7 @@ int main() {
                             player2_pontos++;
                         }
                         else if(game_mode == MENU_PLAYER_VS_PC) {
-                            //@todo pontuar o player da CPU
-
+                            player2_pontos++;
                         }
                         //zerando as matrizes para comecar outra rodada
                         for(int i=0; i< MAX; i++) {
@@ -338,8 +348,14 @@ int main() {
                     //alterna os jogadores mudando o label do player correspondente
                     if(p1 == 1) {
                         p1 = 0;
-                        p2 = 1;
-                        s = player2_name;
+                        if(game_mode == MENU_MULTIPLAYER) {
+                            p2 = 1;
+                            s = player2_name;
+                        }
+                        else if(game_mode == MENU_PLAYER_VS_PC) {
+                            p2 = 0;
+                            s = "CPU";
+                        }
                     }
                     else if(p2 == 1) {
                         p2 = 0;
