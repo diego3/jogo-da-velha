@@ -55,7 +55,7 @@ int main() {
         if(menu_opcao > 0 || menu_opcao == -1) {
             menu = false;
         }
-        //system("cls");
+        system("cls");
 
 
         switch(menu_opcao) {
@@ -311,7 +311,7 @@ int main() {
                     running = false;
                     break;
                 }
-                else if(game_mode == MENU_PLAYER_VS_PC && !posicaoLivre) {
+                else if(game_mode == MENU_PLAYER_VS_PC && cpu == 1 && !posicaoLivre) {
                     cout << " cpu escolheu errado, segue o historico das jogadas!\n\n";
 
                     for(int i=0; i < 9; i++) {
