@@ -89,9 +89,16 @@ int main() {
             break;
             case MENU_PLAYER_VS_PC:{
                 game_mode = MENU_PLAYER_VS_PC;
-                running = true;
 
-                return 0;
+                //limpando o buffer do cin antes de usa-lo
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+
+                cout << "qual o seu nome? ";
+                getline(cin, player1_name);
+
+                s = player1_name;
+                running = true;
             }
             break;
 
@@ -100,7 +107,6 @@ int main() {
             }
             break;
         }
-
 
         while(running) {
             if(jogou) {
@@ -125,19 +131,141 @@ int main() {
                     cout << s << " escolha uma posicao: ";
                     cin >> posicaoEscolhida;
                 }
-                else if(game_mode == MENU_PLAYER_VS_PC) {
-                    //verificar a posicao que o P1 fez
-                    if(vetor[0][0] == '') {
-
+                else if(game_mode == MENU_PLAYER_VS_PC && p1 == 1) {
+                    cout << s << " escolha uma posicao: ";
+                    cin >> posicaoEscolhida;
+                }
+                else if(game_mode == MENU_PLAYER_VS_PC && cpu == 1) {
+                    //defendendo em todas colunas
+                    posicaoEscolhida = 9;
+                    for(int i=0; i < MAX; i++) {
+                        if(vetor[i][1] == 'X' && vetor[i][2] == 'X') {
+                            switch(i) {
+                                case 0:
+                                    posicaoEscolhida = 1;
+                                break;
+                                case 1:
+                                    posicaoEscolhida = 4;
+                                break;
+                                case 2:
+                                    posicaoEscolhida = 6;
+                                break;
+                            }
+                        }
+                        else if(vetor[i][2] == 'X' && vetor[i][0] == 'X') {
+                            switch(i) {
+                                case 0:
+                                    posicaoEscolhida = 2;
+                                break;
+                                case 1:
+                                    posicaoEscolhida = 5;
+                                break;
+                                case 2:
+                                    posicaoEscolhida = 7;
+                                break;
+                            }
+                        }
+                        else if(vetor[i][0] == 'X' && vetor[i][1] == 'X') {
+                            switch(i) {
+                                case 0:
+                                    posicaoEscolhida = 3;
+                                break;
+                                case 1:
+                                    posicaoEscolhida = 7;
+                                break;
+                                case 2:
+                                    posicaoEscolhida = 9;
+                                break;
+                            }
+                        }
                     }
-                    //escolher uma posicao
+
+                    /*
+                        00 01 02
+                        10 11 12
+                        20 21 22
+                    */
+                    for(int col=0; col < MAX; col++) {
+                        if(vetor[0][col] == 'X' && vetor[1][col] == 'X') {
+                            switch(col) {
+                                case 0:
+                                    posicaoEscolhida = 7;
+                                break;
+                                case 1:
+                                    posicaoEscolhida = 8;
+                                break;
+                                case 2:
+                                    posicaoEscolhida = 9;
+                                break;
+                            }
+                        }
+                        else if(vetor[1][col] == 'X' && vetor[2][col] == 'X') {
+                            switch(col) {
+                                case 0:
+                                    posicaoEscolhida = 1;
+                                break;
+                                case 1:
+                                    posicaoEscolhida = 2;
+                                break;
+                                case 2:
+                                    posicaoEscolhida = 3;
+                                break;
+                            }
+                        }
+                        else if(vetor[0][col] == 'X' && vetor[2][col] == 'X') {
+                            switch(col) {
+                                case 0:
+                                    posicaoEscolhida = 4;
+                                break;
+                                case 1:
+                                    posicaoEscolhida = 5;
+                                break;
+                                case 2:
+                                    posicaoEscolhida = 6;
+                                break;
+                            }
+                        }
+                    }
+
+                    //diagonal esquerda
+                    if(vetor[0][0] == 'X' && vetor[1][1] == 'X') {
+                        posicaoEscolhida = 9;
+                    }
+                    else if(vetor[0][0] == 'X' && vetor[2][2] == 'X') {
+                        posicaoEscolhida = 5;
+                    }
+                    else if(vetor[1][1] == 'X' && vetor[2][2] == 'X') {
+                        posicaoEscolhida = 1;
+                    }
+                    //diagonal direita
+                    else if(vetor[0][2] == 'X' && vetor[1][1] == 'X') {
+                        posicaoEscolhida = 7;
+                    }
+                    else if(vetor[0][2] == 'X' && vetor[2][0] == 'X') {
+                        posicaoEscolhida = 5;
+                    }
+                    else if(vetor[2][0] == 'X' && vetor[1][1] == 'X') {
+                        posicaoEscolhida = 3;
+                    }
+                    //Ate aqui já foi verificado todas possibilidades de travar o jogador
+                    //agora a cpu precisa marcar em algum ponto estratégico
+
+
 
 
                 }
 
-                if(posicaoEscolhida < 0) {
-                    running = false;
-                    break;
+                cout << "posicao escolhida == " << posicaoEscolhida << endl;
+
+                if(game_mode == MENU_MULTIPLAYER && posicaoEscolhida < 0) {
+                    //if(posicaoEscolhida < 0) {
+                        running = false;
+                        break;
+                    //}
+                }
+                else if(game_mode == MENU_PLAYER_VS_PC && !posicaoLivre) {
+                    cout << " cpu deve atacar haha!";
+                    return 0;
                 }
 
                 posicaoLivre = true;//flag utilizada para marcar quando a posicao escolhida esta disponivel ou não
@@ -312,7 +440,7 @@ int main() {
                         else if(game_mode == MENU_MULTIPLAYER && p2 == 1) {
                             player2_pontos++;
                         }
-                        else if(game_mode == MENU_PLAYER_VS_PC) {
+                        else if(game_mode == MENU_PLAYER_VS_PC && cpu == 1) {
                             player2_pontos++;
                         }
                         //zerando as matrizes para comecar outra rodada
@@ -350,16 +478,17 @@ int main() {
                         p1 = 0;
                         if(game_mode == MENU_MULTIPLAYER) {
                             p2 = 1;
-                            s = player2_name;
+                            s  = player2_name;
                         }
                         else if(game_mode == MENU_PLAYER_VS_PC) {
-                            p2 = 0;
-                            s = "CPU";
+                            p2  = 0;
+                            cpu = 1;
+                            s   = "CPU";
                         }
                     }
                     else if(p2 == 1) {
-                        p2 = 0;
-                        p1 = 1;
+                        p2 = 0;//desliga o player2
+                        p1 = 1;//re-liga o player1
                         if(game_mode == MENU_MULTIPLAYER) {
                             s = player1_name;
                         }
@@ -403,13 +532,14 @@ int main() {
                     cout << endl;
                 }
                 cout << "\n\n";
+
                 cout << "posicoes que voce pode escolher!\n";
 
                 if(vetor_cheio || marcou_ponto) {
                     char continua = ' ';
                     cout << "jogar proxima partida?(y/n)";
                     cin >> continua;
-                    if(continua == 'y' || continua == 'Y'){
+                    if(continua == 'y' || continua == 'Y' || continua == 's' || continua == 'S'){
                         proxima_partida = true;
                         running         = true;
                     }else {
