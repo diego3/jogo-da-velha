@@ -4,6 +4,7 @@
 #include <cctype> //isdigit
 #include <string>
 #include <fstream>
+#include <time.h>
 
 #define MAX 3                //o dimensao das matrizes
 
@@ -39,6 +40,8 @@ int main() {
     bool menu = true;
     int  menu_opcao = 0;
 
+    srand ( time(NULL) ); //initialize the random seed
+
     while(menu) {
         cout << "*************** MENU *********************\n";
         cout << "       Escolha uma opcao: \n";
@@ -52,7 +55,7 @@ int main() {
         if(menu_opcao > 0 || menu_opcao == -1) {
             menu = false;
         }
-        system("cls");
+        //system("cls");
 
 
         switch(menu_opcao) {
@@ -97,6 +100,10 @@ int main() {
                 cout << "qual o seu nome? ";
                 getline(cin, player1_name);
 
+                string viloes[5] = {"CPU", "WARIO", "SHAOKAN", "JIRAYA", "DEMON"};
+                int rIndex = rand() % 5;// 0 ao 5
+
+                player2_name = viloes[rIndex];
                 s = player1_name;
                 running = true;
             }
@@ -108,8 +115,11 @@ int main() {
             break;
         }
 
+        int turnCount = 0;
+        int turnHistory[9][2] = {0};
         while(running) {
             if(jogou) {
+                turnCount++;//0 ao 8
                 jogou = false;
             }
 
@@ -137,9 +147,9 @@ int main() {
                 }
                 else if(game_mode == MENU_PLAYER_VS_PC && cpu == 1) {
                     //defendendo em todas colunas
-                    posicaoEscolhida = 9;
+
                     for(int i=0; i < MAX; i++) {
-                        if(vetor[i][1] == 'X' && vetor[i][2] == 'X') {
+                        if(grafic[i][1] == 'X' && grafic[i][2] == 'X') {
                             switch(i) {
                                 case 0:
                                     posicaoEscolhida = 1;
@@ -152,7 +162,7 @@ int main() {
                                 break;
                             }
                         }
-                        else if(vetor[i][2] == 'X' && vetor[i][0] == 'X') {
+                        else if(grafic[i][2] == 'X' && grafic[i][0] == 'X') {
                             switch(i) {
                                 case 0:
                                     posicaoEscolhida = 2;
@@ -165,7 +175,7 @@ int main() {
                                 break;
                             }
                         }
-                        else if(vetor[i][0] == 'X' && vetor[i][1] == 'X') {
+                        else if(grafic[i][0] == 'X' && grafic[i][1] == 'X') {
                             switch(i) {
                                 case 0:
                                     posicaoEscolhida = 3;
@@ -180,13 +190,9 @@ int main() {
                         }
                     }
 
-                    /*
-                        00 01 02
-                        10 11 12
-                        20 21 22
-                    */
+
                     for(int col=0; col < MAX; col++) {
-                        if(vetor[0][col] == 'X' && vetor[1][col] == 'X') {
+                        if(grafic[0][col] == 'X' && grafic[1][col] == 'X') {
                             switch(col) {
                                 case 0:
                                     posicaoEscolhida = 7;
@@ -199,7 +205,7 @@ int main() {
                                 break;
                             }
                         }
-                        else if(vetor[1][col] == 'X' && vetor[2][col] == 'X') {
+                        else if(grafic[1][col] == 'X' && grafic[2][col] == 'X') {
                             switch(col) {
                                 case 0:
                                     posicaoEscolhida = 1;
@@ -212,7 +218,7 @@ int main() {
                                 break;
                             }
                         }
-                        else if(vetor[0][col] == 'X' && vetor[2][col] == 'X') {
+                        else if(grafic[0][col] == 'X' && grafic[2][col] == 'X') {
                             switch(col) {
                                 case 0:
                                     posicaoEscolhida = 4;
@@ -228,43 +234,92 @@ int main() {
                     }
 
                     //diagonal esquerda
-                    if(vetor[0][0] == 'X' && vetor[1][1] == 'X') {
+                    if(grafic[0][0] == 'X' && grafic[1][1] == 'X') {
                         posicaoEscolhida = 9;
                     }
-                    else if(vetor[0][0] == 'X' && vetor[2][2] == 'X') {
+                    else if(grafic[0][0] == 'X' && grafic[2][2] == 'X') {
                         posicaoEscolhida = 5;
                     }
-                    else if(vetor[1][1] == 'X' && vetor[2][2] == 'X') {
+                    else if(grafic[1][1] == 'X' && grafic[2][2] == 'X') {
                         posicaoEscolhida = 1;
                     }
                     //diagonal direita
-                    else if(vetor[0][2] == 'X' && vetor[1][1] == 'X') {
+                    else if(grafic[0][2] == 'X' && grafic[1][1] == 'X') {
                         posicaoEscolhida = 7;
                     }
-                    else if(vetor[0][2] == 'X' && vetor[2][0] == 'X') {
+                    else if(grafic[0][2] == 'X' && grafic[2][0] == 'X') {
                         posicaoEscolhida = 5;
                     }
-                    else if(vetor[2][0] == 'X' && vetor[1][1] == 'X') {
+                    else if(grafic[2][0] == 'X' && grafic[1][1] == 'X') {
                         posicaoEscolhida = 3;
                     }
-                    //Ate aqui já foi verificado todas possibilidades de travar o jogador
-                    //agora a cpu precisa marcar em algum ponto estratégico
 
+                    if(posicaoEscolhida > 0) {
+                        bool posicaoUtilizada = false;
+                        for(int i=0; i < 9 && !posicaoUtilizada; i++){
+                            if( posicaoEscolhida == turnHistory[i][1] ) {
+                                posicaoUtilizada = true;
+                            }
+                        }
+                        if(posicaoUtilizada){
+                            posicaoEscolhida = 0;
+                            posicaoLivre = false;
+                        }else {
+                            posicaoLivre = true;
+                        }
+                    }
 
+                    if(posicaoEscolhida > 0) {
+                        cout << "cpu: modo DEFESA - escolheu " << posicaoEscolhida << endl;
+                    }
 
+                    //Ate aqui já foi verificado todas possibilidades de defesa
+                    //agora a cpu precisa comecar a pensar estrategicamente para vencer tambem
+                    if(posicaoEscolhida == 0) {
+                        //para atacar fazer o mesmo lance da defesa aqui hahahahah
 
+                        //int playerJogouEm = turnHistory[turnCount-1][1];//posicao onde o player jogou
+
+                        int randIndex = 0;
+                        bool procurar = true;//procurar uma posicao qualquer que nao tenha sido escolhido ainda
+                        while(procurar) {
+                            bool posicaoUtilizada = false;
+                            randIndex = (rand() % 9) + 1; //0 ao 8 ( + 1 fica do 1 ao 9)
+                            for(int i=0; i < 9 && !posicaoUtilizada; i++){
+                                if( randIndex == turnHistory[i][1] ) {
+                                    posicaoUtilizada = true;
+                                }
+                            }
+                            if(posicaoUtilizada) {
+                                procurar = true;
+                                posicaoLivre = false;
+                            }
+                            else {
+                                procurar = false;
+                                posicaoLivre = true;
+                            }
+                        }
+
+                        if(!procurar){
+                            posicaoEscolhida = randIndex;
+                        }
+                        cout << "cpu: modo ATAQUE - escolheu " << posicaoEscolhida << endl;
+                    }
                 }
-
-                cout << "posicao escolhida == " << posicaoEscolhida << endl;
 
                 if(game_mode == MENU_MULTIPLAYER && posicaoEscolhida < 0) {
-                    //if(posicaoEscolhida < 0) {
-                        running = false;
-                        break;
-                    //}
+                    running = false;
+                    break;
                 }
                 else if(game_mode == MENU_PLAYER_VS_PC && !posicaoLivre) {
-                    cout << " cpu deve atacar haha!";
+                    cout << " cpu escolheu errado, segue o historico das jogadas!\n\n";
+
+                    for(int i=0; i < 9; i++) {
+                        for(int j=0; j < 2; j++) {
+                            cout << i << "" << j << " : " << turnHistory[i][j];
+                        }
+                        cout << endl;
+                    }
                     return 0;
                 }
 
@@ -323,9 +378,8 @@ int main() {
                     //marcando a posicao do vetor com O ou X dependendo do player
                     switch(posicaoEscolhida) {
                         case 1:
-                            //marca a posicao como opcupada e pinta o quadro do jogo
                             vetor[0][0]  = 1;
-                            grafic[0][0] = (p1 == 1) ?  p1S : p2S;//marca a posicao de acordo com o simbolo do jogador
+                            grafic[0][0] = (p1 == 1) ?  p1S : p2S;
                             break;
                         case 2:
                             vetor[0][1]  = 1;
@@ -361,6 +415,11 @@ int main() {
                             break;
                     }
 
+                    turnHistory[turnCount][0] = (p1 == 1) ? 1 : 2;
+                    turnHistory[turnCount][1] = posicaoEscolhida;
+                    //reseta a posicao escolhida
+                    posicaoEscolhida = 0;
+
                     //verificando se existe algum ganhador, ou seja, verificar todas as possibilidades de vitoria
                     int deu_linha = 0;//se deu linha preenchida, isso acontece quando eh igual a 3 [X, O, X] etc...
                     int linha_que_fechou = -1;
@@ -389,7 +448,6 @@ int main() {
                             }
                         }
                     }
-                    //cout << "linha que fechou = " << linha_que_fechou << "\n\n";
 
                     // VERIFICACAO DAS COLUNAS
                     int deu_coluna = 0;
@@ -450,6 +508,16 @@ int main() {
                                 grafic[i][j] = ' ';
                             }
                         }
+
+                        //zerando o historico de jogadas
+                        for(int i=0; i < 9; i++) {
+                            for(int j=0; j < 2; j++) {
+                                turnHistory[i][j] = 0;
+                            }
+                        }
+
+                        //zerando o contador de turnos
+                        turnCount = 0;
                     }else {
                         vetor_cheio = true;
                         for(int i=0; i< MAX; i++) {
@@ -470,6 +538,15 @@ int main() {
                                     grafic[i][j] = ' ';
                                 }
                             }
+                            //zerando o historico de jogadas
+                            for(int i=0; i < 9; i++) {
+                                for(int j=0; j < 2; j++) {
+                                    turnHistory[i][j] = 0;
+                                }
+                            }
+
+                            //zerando o contador de turnos
+                            turnCount = 0;
                         }
                     }
 
@@ -499,11 +576,29 @@ int main() {
                             s = "P2";
                         }
                     }
+                    else if(cpu == 1) {
+                        p1  = 1;
+                        cpu = 0;
+                        s   = player1_name;
+                    }
                     jogou = true;
                 }
                 else {
-                    system("cls");
+                    //system("cls");
                     jogou = false;
+                    if(cpu == 1) {
+                        //posicaoEscolhida = 0;
+                        cout << " cpu escolheu errado DENOVO, segue o historico das jogadas!\n\n";
+
+                        for(int i=0; i < 9; i++) {
+                            for(int j=0; j < 2; j++) {
+                                cout << i << "" << j << " : " << turnHistory[i][j];
+                            }
+                            cout << endl;
+                        }
+                        return 0;
+                    }
+
                     //o jogador escolheu uma posicao ocupada, ele devera escolher a posicao novamente
                     cout << "a posicao '" << posicaoEscolhida << "' esta ocupada, escolha outra!\n";
 
@@ -518,7 +613,7 @@ int main() {
                     continue;
                 }
 
-                system("cls");
+                //system("cls");
                 cout << "\n\n";
                 cout << "****** PLACAR ******\n";
                 cout << "*      P1 - " << player1_pontos << "      *\n";

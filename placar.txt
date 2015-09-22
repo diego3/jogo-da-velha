@@ -9,3 +9,7 @@ DAGRAO , 1 HOMEN , 2
 
 DIEGO , 1 EDWIN , 1 
 DIEGO , 1 EDWIN , 1 
+DIEGO , 2  , 1 
+DIEGO , 2  , 1 
+DIEGO , 0 DEMON , 1 
+DIEGO , 0 DEMON , 1 
